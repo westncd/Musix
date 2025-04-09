@@ -2,111 +2,252 @@ package com.tung.musicapp;
 
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
+import android.os.Handler;
 import android.view.ContextThemeWrapper;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.PopupMenu;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-import java.util.ArrayList;
+import java.io.IOException;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     private Toolbar toolbar;
+    private SeekBar seekBar;
+    private Handler handler = new Handler();
     private ListView songListView;
-    private Button addSongButton, logoutButton;
+    private List<Song> songList;
     private DatabaseHelper dbHelper;
     private SongAdapter songAdapter;
-    private String userRole;
+    private String userRole, userName, userEmail;
     private ImageButton playPauseButton, prevButton, nextButton;
     private BottomNavigationView bottomNavigationView;
-    private static final int PICK_MP3_REQUEST = 102;
+    private MediaPlayer mediaPlayer;
+    private TextView currentSongName;
+    private int currentSongIndex = -1;
+    private TextView currentTimeText, totalDurationText;
+
+    private Runnable updateSeekBar = new Runnable() {
+        @Override
+        public void run() {
+            if (mediaPlayer != null && mediaPlayer.isPlaying()) {
+                int currentPosition = mediaPlayer.getCurrentPosition();
+                seekBar.setProgress(currentPosition);
+                currentTimeText.setText(formatTime(currentPosition));
+                handler.postDelayed(this, 500);
+            }
+        }
+    };
+
+    private String formatTime(int millis) {
+        int minutes = (millis / 1000) / 60;
+        int seconds = (millis / 1000) % 60;
+        return String.format("%02d:%02d", minutes, seconds);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Thiết lập Toolbar
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        // Ánh xạ view
+        initializeViews();
 
-        // Khởi tạo views
+        // Lấy thông tin người dùng
+        getUserInfo();
+
+        // Thiết lập toolbar
+        setSupportActionBar(toolbar);
+        toolbar.setTitle("Xin chào " + userName);
+
+        // Load danh sách bài hát
+        loadSongList();
+
+        // Xử lý khi chọn bài hát
+        songListView.setOnItemClickListener((parent, view, position, id) -> {
+            currentSongIndex = position;
+            playSong(songList.get(position));
+        });
+
+        // Xử lý các nút điều khiển
+        setupControlButtons();
+
+        // Điều hướng dưới
+        setupBottomNavigation();
+
+        // Thiết lập SeekBar
+        setupSeekBar();
+    }
+
+    private void initializeViews() {
+        toolbar = findViewById(R.id.toolbar);
+        seekBar = findViewById(R.id.seekBar);
         songListView = findViewById(R.id.song_list);
-        addSongButton = findViewById(R.id.add_song_button);
-        logoutButton = findViewById(R.id.logout_button);
         playPauseButton = findViewById(R.id.play_pause_button);
         prevButton = findViewById(R.id.prev_button);
         nextButton = findViewById(R.id.next_button);
-        toolbar = findViewById(R.id.toolbar);
+        currentTimeText = findViewById(R.id.current_time);
+        totalDurationText = findViewById(R.id.total_duration);
         bottomNavigationView = findViewById(R.id.bottom_navigation);
+        currentSongName = findViewById(R.id.current_song_name);
         dbHelper = new DatabaseHelper(this);
+    }
 
+    private void getUserInfo() {
         Intent intent = getIntent();
-        String userName = intent.getStringExtra("user_name");
-        toolbar.setTitle("Xin chào " + userName );
+        userName = intent.getStringExtra("user_name");
+        userEmail = intent.getStringExtra("user_email");
+        userRole = intent.getStringExtra("user_role");
+    }
 
+    private void loadSongList() {
+        songList = dbHelper.getAllSongs();
+        songAdapter = new SongAdapter(this, songList);
+        songListView.setAdapter(songAdapter);
+    }
+
+    private void setupControlButtons() {
+        playPauseButton.setOnClickListener(v -> playPause());
+        prevButton.setOnClickListener(v -> playPrevious());
+        nextButton.setOnClickListener(v -> playNext());
+    }
+
+    private void setupBottomNavigation() {
         bottomNavigationView.setOnItemSelectedListener(item -> {
             int id = item.getItemId();
-
             if (id == R.id.nav_create) {
                 showCreateOptions();
                 return true;
             } else if (id == R.id.nav_home) {
-                Intent homeIntent = new Intent(MainActivity.this, MainActivity.class);
-                startActivity(homeIntent);
+                Toast.makeText(this, "Đã chọn trang chủ", Toast.LENGTH_SHORT).show();
                 return true;
             } else if (id == R.id.nav_search) {
                 // xử lý tìm kiếm
                 return true;
-            }
-            else if (id == R.id.nav_library) {
-                // xử lý thư viện
+            } else if (id == R.id.nav_library) {
+                startActivityWithExtras(LibraryActivity.class);
+                return true;
+            } else if (id == R.id.nav_profile) {
+                startActivityWithExtras(ProfileActivity.class);
                 return true;
             }
-            else if (id == R.id.nav_profile) {
-                // xử lý trang cá nhân
-                return true;
-            }
-
             return false;
         });
+    }
 
+    private void setupSeekBar() {
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                if (fromUser && mediaPlayer != null) {
+                    mediaPlayer.seekTo(progress);
+                    currentTimeText.setText(formatTime(progress));
+                }
+            }
 
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+                handler.removeCallbacks(updateSeekBar);
+            }
 
-        // Load danh sách bài hát
-        loadSongs();
-
-        // Nút Add Song
-        addSongButton.setOnClickListener(v -> {
-            Intent pickIntent = new Intent(Intent.ACTION_GET_CONTENT);
-            pickIntent.setType("audio/mpeg");
-            try {
-                startActivityForResult(pickIntent, PICK_MP3_REQUEST);
-            } catch (Exception e) {
-                Toast.makeText(this, "Lỗi mở file picker: " + e.getMessage(), Toast.LENGTH_LONG).show();
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                handler.postDelayed(updateSeekBar, 0);
             }
         });
-
-        // Nút Logout
-        logoutButton.setOnClickListener(v -> {
-            Intent logoutIntent = new Intent(MainActivity.this, LoginActivity.class);
-            logoutIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            startActivity(logoutIntent);
-            finish();
-        });
     }
+
+    private void playPause() {
+        if (mediaPlayer == null) {
+            Toast.makeText(this, "Chưa chọn bài hát nào!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (mediaPlayer.isPlaying()) {
+            mediaPlayer.pause();
+            playPauseButton.setImageResource(R.drawable.play);
+            handler.removeCallbacks(updateSeekBar);
+        } else {
+            mediaPlayer.start();
+            playPauseButton.setImageResource(R.drawable.pause);
+            handler.postDelayed(updateSeekBar, 0);
+        }
+    }
+
+    private void playPrevious() {
+        if (songList == null || songList.isEmpty() || currentSongIndex <= 0) {
+            Toast.makeText(this, "Không có bài hát trước đó!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        currentSongIndex--;
+        playSong(songList.get(currentSongIndex));
+    }
+
+    private void playNext() {
+        if (songList == null || songList.isEmpty() || currentSongIndex >= songList.size() - 1) {
+            Toast.makeText(this, "Không có bài hát tiếp theo!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        currentSongIndex++;
+        playSong(songList.get(currentSongIndex));
+    }
+
+    private void playSong(Song song) {
+        stopCurrentMediaPlayer();
+        try {
+            Uri songUri = Uri.parse(song.getUri());
+            if (songUri == null) {
+                throw new IOException("Invalid URI");
+            }
+            mediaPlayer = new MediaPlayer();
+            mediaPlayer.setDataSource(this, songUri);
+            mediaPlayer.prepare();
+            mediaPlayer.start();
+
+            // Cập nhật UI
+            currentSongName.setText("Đang phát: " + song.getName());
+            playPauseButton.setImageResource(R.drawable.pause);
+            seekBar.setMax(mediaPlayer.getDuration());
+            totalDurationText.setText(formatTime(mediaPlayer.getDuration()));
+            handler.postDelayed(updateSeekBar, 0);
+
+            // Xử lý khi bài hát kết thúc
+            mediaPlayer.setOnCompletionListener(mp -> {
+                seekBar.setProgress(0);
+                currentTimeText.setText("00:00");
+                playPauseButton.setImageResource(R.drawable.play);
+                handler.removeCallbacks(updateSeekBar);
+                playNext();
+            });
+
+        } catch (IOException e) {
+            Toast.makeText(this, "Lỗi phát bài hát: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            currentSongName.setText("Đang phát: Không có bài hát");
+        }
+    }
+
+    private void stopCurrentMediaPlayer() {
+        if (mediaPlayer != null) {
+            if (mediaPlayer.isPlaying()) {
+                mediaPlayer.stop();
+            }
+            mediaPlayer.release();
+            mediaPlayer = null;
+            handler.removeCallbacks(updateSeekBar);
+        }
+    }
+
     private void showCreateOptions() {
         Context wrapper = new ContextThemeWrapper(this, R.style.PopupMenuDark);
         PopupMenu popupMenu = new PopupMenu(wrapper, findViewById(R.id.bottom_navigation));
@@ -115,73 +256,40 @@ public class MainActivity extends AppCompatActivity {
         popupMenu.setOnMenuItemClickListener(menuItem -> {
             int id = menuItem.getItemId();
             if (id == R.id.create_playlist) {
-                Intent intent = new Intent(MainActivity.this, AddPlaylistActivity.class);
-                startActivity(intent);
+                startActivityWithExtras(AddPlaylistActivity.class);
                 return true;
             } else if (id == R.id.add_song) {
-                Toast.makeText(this, "Thêm bài hát", Toast.LENGTH_SHORT).show();
+                startActivityWithExtras(AddSongActivity.class);
                 return true;
             }
             return false;
         });
-
         popupMenu.show();
     }
 
+    private void startActivityWithExtras(Class<?> activityClass) {
+        Intent intent = new Intent(MainActivity.this, activityClass);
+        intent.putExtra("user_email", userEmail);
+        intent.putExtra("user_name", userName);
+        intent.putExtra("user_role", userRole);
 
+        // Thêm thông tin bài hát đang phát nếu có
+        if (mediaPlayer != null && currentSongIndex >= 0 && currentSongIndex < songList.size()) {
+            Song currentSong = songList.get(currentSongIndex);
+            intent.putExtra("current_song_name", currentSong.getName());
+            intent.putExtra("current_song_uri", currentSong.getUri());
+            intent.putExtra("current_song_position", mediaPlayer.getCurrentPosition());
+            intent.putExtra("current_song_index", currentSongIndex);
+            intent.putExtra("is_playing", mediaPlayer.isPlaying());
+        }
 
-    private void loadSongs() {
-        List<Song> songList = dbHelper.getAllSongs();
-        songAdapter = new SongAdapter(this, songList);
-        songListView.setAdapter(songAdapter);
+        startActivity(intent);
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == PICK_MP3_REQUEST && resultCode == RESULT_OK && data != null) {
-            Uri uri = data.getData();
-            if (uri == null) {
-                Toast.makeText(this, "Không lấy được file MP3, Uri null!", Toast.LENGTH_LONG).show();
-                return;
-            }
-            String uriString = uri.toString();
-            String songName = getFileNameFromUri(uri);
-            if (songName == null) {
-                songName = "Unknown Song";
-            }
-            // Lưu bài hát vào database (giả lập artist và album)
-            boolean success = dbHelper.addSong(songName, "Unknown Artist", "Unknown Album", uriString);
-            if (success) {
-                loadSongs();
-                Toast.makeText(this, "Thêm bài hát thành công: " + songName, Toast.LENGTH_SHORT).show();
-            } else {
-                Toast.makeText(this, "Lỗi thêm bài hát!", Toast.LENGTH_LONG).show();
-            }
-        } else {
-            Toast.makeText(this, "Hủy chọn file hoặc lỗi: " + resultCode, Toast.LENGTH_LONG).show();
-        }
-    }
-
-    private String getFileNameFromUri(Uri uri) {
-        String fileName = null;
-        String[] projection = {MediaStore.Audio.Media.DISPLAY_NAME};
-        Cursor cursor = null;
-        try {
-            cursor = getContentResolver().query(uri, projection, null, null, null);
-            if (cursor != null && cursor.moveToFirst()) {
-                int columnIndex = cursor.getColumnIndex(MediaStore.Audio.Media.DISPLAY_NAME);
-                if (columnIndex != -1) {
-                    fileName = cursor.getString(columnIndex);
-                }
-            }
-        } catch (Exception e) {
-            Toast.makeText(this, "Lỗi lấy tên file: " + e.getMessage(), Toast.LENGTH_LONG).show();
-        } finally {
-            if (cursor != null) {
-                cursor.close();
-            }
-        }
-        return fileName;
+    protected void onDestroy() {
+        super.onDestroy();
+        stopCurrentMediaPlayer();
+        handler.removeCallbacks(updateSeekBar);
     }
 }

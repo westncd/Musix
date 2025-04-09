@@ -3,14 +3,11 @@ public class Song {
     private int id;
     private String name;
     private String artist;
-    private String album;
     private String uri;
 
-    public Song(int id, String name, String artist, String album, String uri) {
-        this.id = id;
+    public Song(String name, String artist, String uri) {
         this.name = name;
         this.artist = artist;
-        this.album = album;
         this.uri = uri;
     }
 
@@ -26,9 +23,6 @@ public class Song {
         return artist;
     }
 
-    public String getAlbum() {
-        return album;
-    }
 
     public String getUri() {
         return uri;

@@ -4,8 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.ContextThemeWrapper;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.PopupMenu;
 import android.widget.Toast;
 
@@ -17,22 +15,19 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-public class AddPlaylistActivity extends AppCompatActivity {
-    private EditText playlistNameInput;
-    private DatabaseHelper dbHelper;
-    private Button createButton;
+public class LibraryActivity extends AppCompatActivity {
     private BottomNavigationView bottomNavigationView;
     private String userEmail, userName, userRole;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_add_playlist);
+        setContentView(R.layout.activity_library);
 
-        playlistNameInput = findViewById(R.id.playlist_name_input);
-        createButton = findViewById(R.id.create_button);
+        Intent intent = getIntent();
+        userEmail = intent.getStringExtra("user_email");
+        userName = intent.getStringExtra("user_name");
+        userRole = intent.getStringExtra("user_role");
         bottomNavigationView = findViewById(R.id.bottom_navigation);
-        dbHelper = new DatabaseHelper(this);
-
         bottomNavigationView.setOnItemSelectedListener(item -> {
             int id = item.getItemId();
 
@@ -40,7 +35,7 @@ public class AddPlaylistActivity extends AppCompatActivity {
                 showCreateOptions();
                 return true;
             } else if (id == R.id.nav_home) {
-                Intent homeIntent = new Intent(AddPlaylistActivity.this, MainActivity.class);
+                Intent homeIntent = new Intent(LibraryActivity.this, MainActivity.class);
                 homeIntent.putExtra("user_email", userEmail);
                 homeIntent.putExtra("user_name", userName);
                 homeIntent.putExtra("user_role", userRole);
@@ -51,15 +46,11 @@ public class AddPlaylistActivity extends AppCompatActivity {
                 return true;
             }
             else if (id == R.id.nav_library) {
-                Intent libIntent = new Intent(AddPlaylistActivity.this, LibraryActivity.class);
-                libIntent.putExtra("user_email", userEmail);
-                libIntent.putExtra("user_name", userName);
-                libIntent.putExtra("user_role", userRole);
-                startActivity(libIntent);
+                Toast.makeText(this, "Đã chọn thư viện", Toast.LENGTH_SHORT).show();
                 return true;
             }
             else if (id == R.id.nav_profile) {
-                Intent profileIntent = new Intent(AddPlaylistActivity.this, ProfileActivity.class);
+                Intent profileIntent = new Intent(LibraryActivity.this, ProfileActivity.class);
                 profileIntent.putExtra("user_email", userEmail);
                 profileIntent.putExtra("user_name", userName);
                 profileIntent.putExtra("user_role", userRole);
@@ -70,31 +61,6 @@ public class AddPlaylistActivity extends AppCompatActivity {
             return false;
         });
 
-
-        Intent intent = getIntent();
-        userEmail = intent.getStringExtra("user_email");
-        userName = intent.getStringExtra("user_name");
-        createButton.setOnClickListener(v -> {
-            String playlistName = playlistNameInput.getText().toString().trim();
-            if (playlistName.isEmpty()) {
-                Toast.makeText(this, "Vui lòng nhập tên playlist!", Toast.LENGTH_SHORT).show();
-                return;
-                }
-            boolean success = dbHelper.addPlaylist(playlistName, userEmail);
-            if (success) {
-                Intent libIntent = new Intent(AddPlaylistActivity.this, LibraryActivity.class);
-                libIntent.putExtra("user_email", userEmail);
-                libIntent.putExtra("user_name", userName);
-                libIntent.putExtra("user_role", userRole);
-                startActivity(libIntent);
-                Toast.makeText(this, "Tạo playlist thành công!", Toast.LENGTH_SHORT).show();
-                finish(); // Đóng activity sau khi tạo thành công
-            }
-
-            else {
-                Toast.makeText(this, "Tạo playlist thất bại!", Toast.LENGTH_SHORT).show();
-            }
-        });
     }
     private void showCreateOptions() {
         Context wrapper = new ContextThemeWrapper(this, R.style.PopupMenuDark);
@@ -104,20 +70,21 @@ public class AddPlaylistActivity extends AppCompatActivity {
         popupMenu.setOnMenuItemClickListener(menuItem -> {
             int id = menuItem.getItemId();
             if (id == R.id.create_playlist) {
-                Toast.makeText(this, "Đã chọn tạo playlist", Toast.LENGTH_SHORT).show();
-                return true;
-            } else if (id == R.id.add_song) {
-                Intent intent = new Intent(AddPlaylistActivity.this, AddSongActivity.class);
+                Intent intent = new Intent(LibraryActivity.this, AddPlaylistActivity.class);
                 intent.putExtra("user_email", userEmail);
                 intent.putExtra("user_name", userName);
                 intent.putExtra("user_role", userRole);
                 startActivity(intent);
                 return true;
+            } else if (id == R.id.add_song) {
+                Intent intent = new Intent(LibraryActivity.this, AddSongActivity.class);
+                intent.putExtra("user_email", userEmail);
+                intent.putExtra("user_name", userName);
+                intent.putExtra("user_role", userRole);                return true;
             }
             return false;
         });
 
         popupMenu.show();
     }
-
 }

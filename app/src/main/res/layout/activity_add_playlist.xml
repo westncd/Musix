@@ -36,6 +36,7 @@
         android:layout_height="wrap_content"
         android:hint="Tên playlist"
         android:backgroundTint="@color/white"
+        android:textColorHint="@color/gray"
         android:textColor="@color/white"
         android:padding="12dp"
 

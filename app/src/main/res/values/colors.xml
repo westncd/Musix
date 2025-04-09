@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#121212</color> <!-- Nền chính (dark theme) -->
+    <color name="gray">#B3B3B3</color> <!-- Chữ phụ (nghệ sĩ) -->
+    <color name="white">#FFFFFF</color> <!-- Chữ chính (tên bài hát) -->
+    <color name="dark_gray">#1E1E1E</color> <!-- Nền item trong list -->
+    <color name="green_spotify">#1DB954</color> <!-- Màu xanh Spotify (dùng cho icon) -->
+    <color name="red_spotify">#FF0000</color> <!-- Màu đỏ Spotify (dùng cho nút đăng xuất) -->
+    <color name="kinda_dark_gray">#474747</color>
+</resources>

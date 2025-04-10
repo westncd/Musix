@@ -1,5 +1,4 @@
 package com.tung.musicapp;
-
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -14,35 +13,26 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.ArrayList;
-
 public class LibraryActivity extends AppCompatActivity {
     private BottomNavigationView bottomNavigationView;
     private String userEmail, userName, userRole;
     private DatabaseHelper dbHelper;
     private LibraryAdapter libraryAdapter;
     private ListView playlistListView;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_library);
-
         dbHelper = new DatabaseHelper(this);
         playlistListView = findViewById(R.id.playlist_list);
-
         Intent intent = getIntent();
-
         userEmail = intent.getStringExtra("user_email");
         userName = intent.getStringExtra("user_name");
         userRole = intent.getStringExtra("user_role");
-
         Log.d("LibraryActivity", "User Email: " + userEmail);
-
         bottomNavigationView = findViewById(R.id.bottom_navigation);
         bottomNavigationView.setSelectedItemId(R.id.nav_library);
-
         loadPlaylists();
-
         bottomNavigationView.setOnItemSelectedListener(item -> {
             int id = item.getItemId();
             if (id == R.id.nav_create) {
@@ -71,7 +61,6 @@ public class LibraryActivity extends AppCompatActivity {
             return false;
         });
     }
-
     private void loadPlaylists() {
         if (userEmail == null) {
             Toast.makeText(this, "Không tìm thấy email người dùng", Toast.LENGTH_LONG).show();
@@ -81,7 +70,6 @@ public class LibraryActivity extends AppCompatActivity {
         libraryAdapter = new LibraryAdapter(this, playlists, userEmail, userName, userRole);
         playlistListView.setAdapter(libraryAdapter);
     }
-
     private void showCreateOptions() {
         Context wrapper = new ContextThemeWrapper(this, R.style.PopupMenuDark);
         PopupMenu popupMenu = new PopupMenu(wrapper, findViewById(R.id.bottom_navigation));
@@ -106,7 +94,6 @@ public class LibraryActivity extends AppCompatActivity {
             }
             return false;
         });
-
         popupMenu.show();
     }
 }

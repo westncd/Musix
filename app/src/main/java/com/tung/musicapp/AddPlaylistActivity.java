@@ -1,5 +1,4 @@
 package com.tung.musicapp;
-
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -16,7 +15,6 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-
 public class AddPlaylistActivity extends AppCompatActivity {
     private EditText playlistNameInput;
     private DatabaseHelper dbHelper;
@@ -27,13 +25,11 @@ public class AddPlaylistActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_playlist);
-
         playlistNameInput = findViewById(R.id.playlist_name_input);
         createButton = findViewById(R.id.create_button);
         bottomNavigationView = findViewById(R.id.bottom_navigation);
         bottomNavigationView.setSelectedItemId(R.id.nav_create);
         dbHelper = new DatabaseHelper(this);
-
         bottomNavigationView.setOnItemSelectedListener(item -> {
             int id = item.getItemId();
 
@@ -70,8 +66,6 @@ public class AddPlaylistActivity extends AppCompatActivity {
 
             return false;
         });
-
-
         Intent intent = getIntent();
         userEmail = intent.getStringExtra("user_email");
         userName = intent.getStringExtra("user_name");
@@ -91,7 +85,6 @@ public class AddPlaylistActivity extends AppCompatActivity {
                 Toast.makeText(this, "Tạo playlist thành công!", Toast.LENGTH_SHORT).show();
                 finish(); // Đóng activity sau khi tạo thành công
             }
-
             else {
                 Toast.makeText(this, "Tạo playlist thất bại!", Toast.LENGTH_SHORT).show();
             }
@@ -119,8 +112,6 @@ public class AddPlaylistActivity extends AppCompatActivity {
             }
             return false;
         });
-
         popupMenu.show();
     }
-
 }

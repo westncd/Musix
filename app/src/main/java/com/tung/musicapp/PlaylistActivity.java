@@ -20,7 +20,6 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import java.util.List;
 
 public class PlaylistActivity extends AppCompatActivity {
-
     private Toolbar toolbar;
     private ListView playlistSongListView;
     private BottomNavigationView bottomNavigationView;
@@ -28,29 +27,23 @@ public class PlaylistActivity extends AppCompatActivity {
     private DatabaseHelper dbHelper;
     private String playlistId;
     private String userEmail, playlistName, userName, userRole;  // nếu cần dùng
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_playlist);
-
         dbHelper = new DatabaseHelper(this);
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
         Intent intent = getIntent();
         playlistId = getIntent().getStringExtra("playlist_id");
         playlistName = getIntent().getStringExtra("playlist_name");
         userEmail = getIntent().getStringExtra("user_email");
         userName = getIntent().getStringExtra("user_name");
         userRole = getIntent().getStringExtra("user_role");
-
         bottomNavigationView = findViewById(R.id.bottom_navigation);
         bottomNavigationView.setSelectedItemId(R.id.nav_library);
-
         bottomNavigationView.setOnItemSelectedListener(item -> {
             int id = item.getItemId();
-
             if (id == R.id.nav_create) {
                 showCreateOptions();
                 return true;
@@ -81,35 +74,27 @@ public class PlaylistActivity extends AppCompatActivity {
                 startActivity(profileIntent);
                 return true;
             }
-
             return false;
         });
-
         if (playlistName != null) {
             toolbar.setTitle(playlistName);
         }
-
         playlistSongListView = findViewById(R.id.playlist_songs);
         loadSongs();
-
         userEmail = intent.getStringExtra("user_email");
-
         if (playlistName != null) {
             toolbar.setTitle(playlistName);
         } else {
             toolbar.setTitle("Playlist");
         }
-
         playlistSongListView = findViewById(R.id.playlist_songs);
         loadSongs();
     }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.playlist_toolbar_menu, menu);
         return true;
     }
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.delete_playlist) {
@@ -118,29 +103,25 @@ public class PlaylistActivity extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
-
     private void confirmDeletePlaylist() {
         new AlertDialog.Builder(this)
                 .setTitle("Xoá playlist")
                 .setMessage("Bạn có chắc chắn muốn xoá playlist này không?")
                 .setPositiveButton("Xoá", (dialog, which) -> {
-                    dbHelper.deletePlaylist(playlistId); // playlistId là ID playlist hiện tại
+                    dbHelper.deletePlaylist(playlistId);
                     Toast.makeText(this, "Đã xoá playlist!", Toast.LENGTH_SHORT).show();
-                    finish(); // Quay lại màn hình trước
+                    finish();
                 })
                 .setNegativeButton("Huỷ", null)
                 .show();
     }
-
     private void loadSongs() {
         if (playlistId == null || playlistId.isEmpty()) {
             Toast.makeText(this, "Không tìm thấy playlist.", Toast.LENGTH_SHORT).show();
             return;
         }
-
         int id = Integer.parseInt(playlistId);
         List<Song> songs = dbHelper.getSongsInPlaylist(id);
-
         adapter = new PlaylistAdapter(this, songs, song -> {
             dbHelper.removeSongFromPlaylist(song.getId(), id);
             songs.remove(song);
@@ -150,7 +131,6 @@ public class PlaylistActivity extends AppCompatActivity {
 
         playlistSongListView.setAdapter(adapter);
     }
-
     private void showCreateOptions() {
         Context wrapper = new ContextThemeWrapper(this, R.style.PopupMenuDark);
         PopupMenu popupMenu = new PopupMenu(wrapper, findViewById(R.id.bottom_navigation));
@@ -177,7 +157,6 @@ public class PlaylistActivity extends AppCompatActivity {
             }
             return false;
         });
-
-
+        popupMenu.show();
     }
 }

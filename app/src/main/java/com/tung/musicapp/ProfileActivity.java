@@ -1,5 +1,4 @@
 package com.tung.musicapp;
-
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -17,7 +16,6 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-
 public class ProfileActivity extends AppCompatActivity {
     private Button logoutButton;
     private TextView userNameTextView, userEmailTextView;
@@ -33,7 +31,6 @@ public class ProfileActivity extends AppCompatActivity {
         userNameTextView = findViewById(R.id.user_name);
         bottomNavigationView = findViewById(R.id.bottom_navigation);
         bottomNavigationView.setSelectedItemId(R.id.nav_profile);
-
         Intent intent = getIntent();
         userName = intent.getStringExtra("user_name");
         userEmail = intent.getStringExtra("user_email");
@@ -47,10 +44,8 @@ public class ProfileActivity extends AppCompatActivity {
             startActivity(logoutIntent);
             finish();
         });
-
         bottomNavigationView.setOnItemSelectedListener(item -> {
             int id = item.getItemId();
-
             if (id == R.id.nav_create) {
                 showCreateOptions();
                 return true;
@@ -77,7 +72,6 @@ public class ProfileActivity extends AppCompatActivity {
                 Toast.makeText(this, "Đã chọn hồ sơ", Toast.LENGTH_SHORT).show();
                 return true;
             }
-
             return false;
         });
     }
@@ -107,7 +101,6 @@ public class ProfileActivity extends AppCompatActivity {
             }
             return false;
         });
-
         popupMenu.show();
     }
 }

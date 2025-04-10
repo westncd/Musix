@@ -1,5 +1,4 @@
 package com.tung.musicapp;
-
 public class Playlist {
     public int id ;
     public String playlistName;
@@ -11,18 +10,15 @@ public class Playlist {
         this.userEmail = userEmail;
         this.songCount = songCount;
     }
-
     public int getId() {
         return id;
     }
     public String getPlaylistName() {
         return playlistName;
     }
-
     public int getSongCount() {
         return songCount;
     }
-
     public String getUserEmail() {
         return userEmail;
     }

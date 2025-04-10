@@ -1,5 +1,4 @@
 package com.tung.musicapp;
-
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,51 +8,41 @@ import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 import java.util.List;
-
 public class PlaylistAdapter extends BaseAdapter {
-
     private Context context;
     private List<Song> songs;
     private LayoutInflater inflater;
     private OnSongActionListener actionListener;
-
     public interface OnSongActionListener {
         void onRemoveSong(Song song);
     }
-
     public PlaylistAdapter(Context context, List<Song> songs, OnSongActionListener actionListener) {
         this.context = context;
         this.songs = songs;
         this.actionListener = actionListener;
         this.inflater = LayoutInflater.from(context);
     }
-
     @Override
     public int getCount() {
         return songs.size();
     }
-
     @Override
     public Object getItem(int position) {
         return songs.get(position);
     }
-
     @Override
     public long getItemId(int position) {
         return songs.get(position).getId();
     }
-
     static class ViewHolder {
         TextView songName;
         TextView artistName;
         ImageView menuButton;
     }
-
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         Song song = songs.get(position);
         ViewHolder holder;
-
         if (convertView == null) {
             convertView = inflater.inflate(R.layout.item_playlist_song, parent, false);
             holder = new ViewHolder();
@@ -64,10 +53,8 @@ public class PlaylistAdapter extends BaseAdapter {
         } else {
             holder = (ViewHolder) convertView.getTag();
         }
-
         holder.songName.setText(song.getName());
         holder.artistName.setText(song.getArtist());
-
         holder.menuButton.setOnClickListener(v -> {
             PopupMenu popup = new PopupMenu(context, v);
             popup.inflate(R.menu.song_item_menu);

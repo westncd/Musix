@@ -1,5 +1,4 @@
 package com.tung.musicapp;
-
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -14,36 +13,26 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-
 public class AddSongActivity extends AppCompatActivity {
     private Button addSongButton, pickMp3Button;
     private EditText songNameEditText;
     private TextView songPathTextView;
     private BottomNavigationView bottomNavigationView;
     private DatabaseHelper dbHelper;
-
     private Uri selectedMp3Uri;
-
     private String userEmail, userName, userRole;
     private static final int PICK_MP3_REQUEST = 102;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_song);
-
-        // Ánh xạ view
         addSongButton = findViewById(R.id.add_song_button);
         pickMp3Button = findViewById(R.id.pick_mp3_button);
         songNameEditText = findViewById(R.id.song_name_input);
         songPathTextView = findViewById(R.id.song_url_input);
         bottomNavigationView = findViewById(R.id.bottom_navigation);
         bottomNavigationView.setSelectedItemId(R.id.nav_create);
-
-
         dbHelper = new DatabaseHelper(this);
-
-        // Nhận user info
         Intent intent = getIntent();
         userName = intent.getStringExtra("user_name");
         userEmail = intent.getStringExtra("user_email");
@@ -59,9 +48,6 @@ public class AddSongActivity extends AppCompatActivity {
                 Toast.makeText(this, "Lỗi mở file picker: " + e.getMessage(), Toast.LENGTH_LONG).show();
             }
         });
-
-
-
         addSongButton.setOnClickListener(v -> {
             String songName = songNameEditText.getText().toString().trim();
             String songUrl = selectedMp3Uri != null ? selectedMp3Uri.toString() : "";
@@ -80,7 +66,6 @@ public class AddSongActivity extends AppCompatActivity {
                 Toast.makeText(this, "Vui lòng nhập tên bài hát và chọn file MP3!", Toast.LENGTH_SHORT).show();
             }
         });
-
         bottomNavigationView.setOnItemSelectedListener(item -> {
             int id = item.getItemId();
             if (id == R.id.nav_create) {
@@ -99,7 +84,6 @@ public class AddSongActivity extends AppCompatActivity {
             return false;
         });
     }
-
     private void navigateTo(Class<?> destination) {
         Intent intent = new Intent(AddSongActivity.this, destination);
         intent.putExtra("user_email", userEmail);
@@ -107,7 +91,6 @@ public class AddSongActivity extends AppCompatActivity {
         intent.putExtra("user_role", userRole);
         startActivity(intent);
     }
-
     private void showCreateOptions() {
         Context wrapper = new ContextThemeWrapper(this, R.style.PopupMenuDark);
         PopupMenu popupMenu = new PopupMenu(wrapper, findViewById(R.id.bottom_navigation));

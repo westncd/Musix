@@ -1,5 +1,4 @@
 package com.tung.musicapp;
-
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.AssetFileDescriptor;
@@ -16,15 +15,11 @@ import android.widget.PopupMenu;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-
 import java.io.IOException;
 import java.util.List;
-
 public class MainActivity extends AppCompatActivity {
     private Toolbar toolbar;
     private SeekBar seekBar;
@@ -40,7 +35,6 @@ public class MainActivity extends AppCompatActivity {
     private TextView currentSongName;
     private int currentSongIndex = -1;
     private TextView currentTimeText, totalDurationText;
-
     private Runnable updateSeekBar = new Runnable() {
         @Override
         public void run() {
@@ -52,7 +46,6 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     };
-
     private String formatTime(int millis) {
         int minutes = (millis / 1000) / 60;
         int seconds = (millis / 1000) % 60;
@@ -62,15 +55,11 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         initializeViews();
         getUserInfo();
-
         setSupportActionBar(toolbar);
         toolbar.setTitle("Xin chào " + userName);
-
         loadSongList();
-
         songListView.setOnItemClickListener((parent, view, position, id) -> {
             currentSongIndex = position;
             playSong(songList.get(position));
@@ -79,7 +68,6 @@ public class MainActivity extends AppCompatActivity {
         setupBottomNavigation();
         setupSeekBar();
     }
-
     private void initializeViews() {
         toolbar = findViewById(R.id.toolbar);
         seekBar = findViewById(R.id.seekBar);
@@ -93,26 +81,22 @@ public class MainActivity extends AppCompatActivity {
         currentSongName = findViewById(R.id.current_song_name);
         dbHelper = new DatabaseHelper(this);
     }
-
     private void getUserInfo() {
         Intent intent = getIntent();
         userName = intent.getStringExtra("user_name");
         userEmail = intent.getStringExtra("user_email");
         userRole = intent.getStringExtra("user_role");
     }
-
     private void loadSongList() {
         songList = dbHelper.getAllSongs();
         songAdapter = new SongAdapter(this, songList, userEmail);
         songListView.setAdapter(songAdapter);
     }
-
     private void setupControlButtons() {
         playPauseButton.setOnClickListener(v -> playPause());
         prevButton.setOnClickListener(v -> playPrevious());
         nextButton.setOnClickListener(v -> playNext());
     }
-
     private void setupBottomNavigation() {
         bottomNavigationView.setSelectedItemId(R.id.nav_home);
         bottomNavigationView.setOnItemSelectedListener(item -> {
@@ -135,7 +119,6 @@ public class MainActivity extends AppCompatActivity {
             return false;
         });
     }
-
     private void setupSeekBar() {
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -145,19 +128,16 @@ public class MainActivity extends AppCompatActivity {
                     currentTimeText.setText(formatTime(progress));
                 }
             }
-
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
                 handler.removeCallbacks(updateSeekBar);
             }
-
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
                 handler.postDelayed(updateSeekBar, 0);
             }
         });
     }
-
     private void playPause() {
         if (mediaPlayer == null) {
             Toast.makeText(this, "Chưa chọn bài hát nào!", Toast.LENGTH_SHORT).show();
@@ -173,7 +153,6 @@ public class MainActivity extends AppCompatActivity {
             handler.postDelayed(updateSeekBar, 0);
         }
     }
-
     private void playPrevious() {
         if (songList == null || songList.isEmpty() || currentSongIndex <= 0) {
             Toast.makeText(this, "Không có bài hát trước đó!", Toast.LENGTH_SHORT).show();
@@ -182,7 +161,6 @@ public class MainActivity extends AppCompatActivity {
         currentSongIndex--;
         playSong(songList.get(currentSongIndex));
     }
-
     private void playNext() {
         if (songList == null || songList.isEmpty() || currentSongIndex >= songList.size() - 1) {
             Toast.makeText(this, "Không có bài hát tiếp theo!", Toast.LENGTH_SHORT).show();
@@ -191,25 +169,20 @@ public class MainActivity extends AppCompatActivity {
         currentSongIndex++;
         playSong(songList.get(currentSongIndex));
     }
-
     private void playSong(Song song) {
         stopCurrentMediaPlayer();
-
         try {
             Uri songUri = Uri.parse(song.getUri());
             Log.d("SONG_URI", "Đang phát bài: " + song.getName() + " - " + songUri.toString());
-
             mediaPlayer = new MediaPlayer();
             mediaPlayer.setDataSource(this, songUri);
             mediaPlayer.prepare();
             mediaPlayer.start();
-
             currentSongName.setText("Đang phát: " + song.getName());
             playPauseButton.setImageResource(R.drawable.pause);
             seekBar.setMax(mediaPlayer.getDuration());
             totalDurationText.setText(formatTime(mediaPlayer.getDuration()));
             handler.postDelayed(updateSeekBar, 0);
-
             mediaPlayer.setOnCompletionListener(mp -> {
                 seekBar.setProgress(0);
                 currentTimeText.setText("00:00");
@@ -217,14 +190,12 @@ public class MainActivity extends AppCompatActivity {
                 handler.removeCallbacks(updateSeekBar);
                 playNext();
             });
-
         } catch (Exception e) {
             e.printStackTrace();
             Toast.makeText(this, "Lỗi phát bài hát: " + e.getMessage(), Toast.LENGTH_LONG).show();
             currentSongName.setText("Đang phát: Không có bài hát");
         }
     }
-
     private void stopCurrentMediaPlayer() {
         if (mediaPlayer != null) {
             if (mediaPlayer.isPlaying()) {
@@ -235,7 +206,6 @@ public class MainActivity extends AppCompatActivity {
             handler.removeCallbacks(updateSeekBar);
         }
     }
-
     private void showCreateOptions() {
         Context wrapper = new ContextThemeWrapper(this, R.style.PopupMenuDark);
         PopupMenu popupMenu = new PopupMenu(wrapper, findViewById(R.id.bottom_navigation));
@@ -256,13 +226,11 @@ public class MainActivity extends AppCompatActivity {
         });
         popupMenu.show();
     }
-
     private void startActivityWithExtras(Class<?> activityClass) {
         Intent intent = new Intent(MainActivity.this, activityClass);
         intent.putExtra("user_email", userEmail);
         intent.putExtra("user_name", userName);
         intent.putExtra("user_role", userRole);
-
         if (mediaPlayer != null && currentSongIndex >= 0 && currentSongIndex < songList.size()) {
             Song currentSong = songList.get(currentSongIndex);
             intent.putExtra("current_song_name", currentSong.getName());
@@ -273,7 +241,6 @@ public class MainActivity extends AppCompatActivity {
         }
         startActivity(intent);
     }
-
     @Override
     protected void onDestroy() {
         super.onDestroy();

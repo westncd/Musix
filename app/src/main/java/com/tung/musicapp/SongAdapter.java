@@ -1,5 +1,4 @@
 package com.tung.musicapp;
-
 import android.app.AlertDialog;
 import android.content.Context;
 import android.view.ContextThemeWrapper;
@@ -10,45 +9,36 @@ import android.widget.BaseAdapter;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import java.util.List;
-
 public class SongAdapter extends BaseAdapter {
     private Context context;
     private List<Song> songList;
     private DatabaseHelper dbHelper;
     private String userEmail;
-
     public SongAdapter(Context context, List<Song> songList, String userEmail) {
         this.context = context;
         this.songList = songList;
         this.dbHelper = new DatabaseHelper(context);
         this.userEmail = userEmail;
     }
-
     @Override
     public int getCount() {
         return songList.size();
     }
-
     @Override
     public Object getItem(int position) {
         return songList.get(position);
     }
-
     @Override
     public long getItemId(int position) {
         return songList.get(position).getId();
     }
-
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         if (convertView == null) {
             convertView = LayoutInflater.from(context).inflate(R.layout.item_song, parent, false);
         }
-
         Song song = songList.get(position);
-
         TextView songNameText = convertView.findViewById(R.id.song_name);
         TextView artistNameText = convertView.findViewById(R.id.artist_name);
         ImageButton btnAddToPlaylist = convertView.findViewById(R.id.btn_add_to_playlist);
@@ -62,7 +52,6 @@ public class SongAdapter extends BaseAdapter {
 
         return convertView;
     }
-
     private void showAddToPlaylistDialog(Song song) {
         List<Playlist> playlists = dbHelper.getAllPlaylists(userEmail);
         if (playlists.isEmpty()) {

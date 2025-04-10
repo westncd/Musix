@@ -7,4 +7,6 @@
     <color name="green_spotify">#1DB954</color> <!-- Màu xanh Spotify (dùng cho icon) -->
     <color name="red_spotify">#FF0000</color> <!-- Màu đỏ Spotify (dùng cho nút đăng xuất) -->
     <color name="kinda_dark_gray">#474747</color>
+    <color name="lighter_gray">#D3D3D3</color>
+    <color name="garden_gray">#353E43</color>
 </resources>

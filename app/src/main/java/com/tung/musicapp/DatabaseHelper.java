@@ -6,13 +6,14 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "spotify_clone.db";
-    private static final int DATABASE_VERSION = 6; // Tăng version để upgrade database
+    private static final int DATABASE_VERSION = 7; // Tăng version để upgrade database
 
     // Bảng Users
     public static final String TABLE_USERS = "users";
@@ -48,13 +49,30 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String COLUMN_PLAYLIST_ID = "playlist_id";
     public static final String COLUMN_PLAYLIST_NAME = "playlist_name";
     public static final String COLUMN_USER_EMAIL = "user_email";
+    public static final String COLUMN_SONG_COUNT = "song_count";
 
     private static final String CREATE_TABLE_PLAYLISTS =
             "CREATE TABLE " + TABLE_PLAYLISTS + "(" +
                     COLUMN_PLAYLIST_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
                     COLUMN_PLAYLIST_NAME + " TEXT," +
                     COLUMN_USER_EMAIL + " TEXT," +
+                    COLUMN_SONG_COUNT + " INTEGER DEFAULT 0," +
                     "FOREIGN KEY (" + COLUMN_USER_EMAIL + ") REFERENCES " + TABLE_USERS + "(" + COLUMN_EMAIL + "))";
+
+    private static final String TABLE_PLAYLIST_SONGS = "playlist_songs";
+    private static final String COLUMN_PLAYLIST_SONG_ID = "playlist_song_id";
+    private static final String COLUMN_PL_ID = "playlist_id";
+    private static final String COLUMN_S_ID = "song_id";
+
+    private static final String CREATE_TABLE_PLAYLIST_SONGS =
+            "CREATE TABLE " + TABLE_PLAYLIST_SONGS + "(" +
+                    COLUMN_PLAYLIST_SONG_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
+                    COLUMN_PL_ID + " INTEGER," +
+                    COLUMN_S_ID + " INTEGER," +
+                    "FOREIGN KEY (" + COLUMN_PL_ID + ") REFERENCES " + TABLE_PLAYLISTS + "(" + COLUMN_PLAYLIST_ID + ")," +
+                    "FOREIGN KEY (" + COLUMN_S_ID + ") REFERENCES " + TABLE_SONGS + "(" + COLUMN_SONG_ID + "))";
+
+
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
@@ -64,6 +82,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(CREATE_TABLE_USERS);
         db.execSQL(CREATE_TABLE_SONGS);
         db.execSQL(CREATE_TABLE_PLAYLISTS);
+        db.execSQL(CREATE_TABLE_PLAYLIST_SONGS);
 
         // Thêm dữ liệu mẫu cho users
         insertUser(db, "musician1@email.com", "123456", "Nguyễn Văn Nhạc" ,  "Musician");
@@ -82,6 +101,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_SONGS);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_USERS);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_PLAYLISTS);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_PLAYLIST_SONGS);
         onCreate(db);
     }
 
@@ -142,6 +162,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         if (cursor.moveToFirst()) {
             do {
                 @SuppressLint("Range") Song song = new Song(
+                        cursor.getInt(cursor.getColumnIndex(COLUMN_SONG_ID)),
                         cursor.getString(cursor.getColumnIndex(COLUMN_SONG_NAME)),
                         cursor.getString(cursor.getColumnIndex(COLUMN_ARTIST)),
                         cursor.getString(cursor.getColumnIndex(COLUMN_URI))
@@ -164,6 +185,111 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return result != -1;
     }
 
+    public ArrayList<Playlist> getAllPlaylists(String userEmail) {
+        ArrayList<Playlist> playlists = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor cursor = db.rawQuery(
+                "SELECT * FROM playlists WHERE user_email = ?",
+                new String[]{userEmail}
+        );
+
+        if (cursor.moveToFirst()) {
+            do {
+                int id = cursor.getInt(cursor.getColumnIndexOrThrow("playlist_id"));
+                String name = cursor.getString(cursor.getColumnIndexOrThrow("playlist_name"));
+                int songCount = cursor.getInt(cursor.getColumnIndexOrThrow("song_count"));
+                playlists.add(new Playlist(id, name, userEmail, songCount));
+
+            } while (cursor.moveToNext());
+        }
+
+
+        cursor.close();
+        db.close();
+        return playlists;
+    }
+
+    public void addSongToPlaylist(int songId, int playlistId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_PL_ID, playlistId);
+        values.put(COLUMN_S_ID, songId);
+
+        long result = db.insert(TABLE_PLAYLIST_SONGS, null, values);
+        if (result == -1) {
+            Log.e("DatabaseHelper", "Lỗi khi thêm bài hát vào playlist.");
+        } else {
+            Log.d("DatabaseHelper", "Thêm bài hát vào playlist thành công.");
+            db.execSQL("UPDATE playlists SET song_count = song_count + 1 WHERE playlist_id = ?",
+                    new Object[]{playlistId});
+        }
+
+        db.close();
+    }
+
+    public List<Song> getSongsInPlaylist(int playlistId) {
+        List<Song> songs = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        String query = "SELECT s.song_id, s.song_name AS name, s.artist, s.uri FROM songs s " +
+                "JOIN playlist_songs ps ON s.song_id = ps.song_id " +
+                "WHERE ps.playlist_id = ?";
+        Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(playlistId)});
+
+        if (cursor.moveToFirst()) {
+            do {
+                int id = cursor.getInt(cursor.getColumnIndexOrThrow("song_id"));
+                String name = cursor.getString(cursor.getColumnIndexOrThrow("name"));
+                String artist = cursor.getString(cursor.getColumnIndexOrThrow("artist"));
+                String uri = cursor.getString(cursor.getColumnIndexOrThrow("uri"));
+                songs.add(new Song(id, name, artist, uri));
+            } while (cursor.moveToNext());
+        }
+
+        cursor.close();
+        db.close();
+        return songs;
+    }
+
+
+    public void removeSongFromPlaylist(int songId, int playlistId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        try {
+            // Xoá bài hát khỏi bảng trung gian
+            int rowsAffected = db.delete(
+                    TABLE_PLAYLIST_SONGS,
+                    COLUMN_S_ID + " = ? AND " + COLUMN_PL_ID + " = ?",
+                    new String[]{String.valueOf(songId), String.valueOf(playlistId)}
+            );
+
+            // Nếu xoá thành công thì giảm song_count
+            if (rowsAffected > 0) {
+                db.execSQL("UPDATE " + TABLE_PLAYLISTS +
+                                " SET " + COLUMN_SONG_COUNT + " = " + COLUMN_SONG_COUNT + " - 1 " +
+                                "WHERE " + COLUMN_PLAYLIST_ID + " = ?",
+                        new Object[]{playlistId});
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            db.close();
+        }
+    }
+
+    public void deletePlaylist(String playlistId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        try {
+            db.delete("playlist_songs", "playlist_id = ?", new String[]{playlistId});
+            db.delete("playlists", "id = ?", new String[]{playlistId});
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            db.close();
+        }
+    }
+
+
 
     // Model User
     public static class User {
@@ -182,11 +308,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         public String getEmail() {
             return email;
         }
-
         public String getName(){
             return name;
         }
-
         public String getRole() {
             return role;
         }

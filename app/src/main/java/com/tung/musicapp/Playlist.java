@@ -1,20 +1,28 @@
 package com.tung.musicapp;
 
-public class PLaylist {
-    public String id ;
+public class Playlist {
+    public int id ;
     public String playlistName;
     public String userEmail;
-    public PLaylist(String id, String playlistName, String userEmail) {
+    public int songCount;
+    public Playlist(int id, String playlistName, String userEmail, int songCount) {
         this.id = id;
         this.playlistName = playlistName;
         this.userEmail = userEmail;
+        this.songCount = songCount;
     }
-    public String getId() {
+
+    public int getId() {
         return id;
     }
     public String getPlaylistName() {
         return playlistName;
     }
+
+    public int getSongCount() {
+        return songCount;
+    }
+
     public String getUserEmail() {
         return userEmail;
     }

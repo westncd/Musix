@@ -13,7 +13,7 @@
         android:layout_height="wrap_content"
         android:background="@color/black"
         app:title="Hồ sơ cá nhân"
-        android:paddingTop="24dp"
+        android:layout_marginTop="24dp"
         app:titleTextColor="@color/white"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -25,7 +25,7 @@
         android:id="@+id/avatar_image"
         android:layout_width="100dp"
         android:layout_height="100dp"
-        android:layout_marginTop="280dp"
+        android:layout_marginTop="172dp"
         android:background="@drawable/circle_background"
         android:backgroundTint="@color/gray"
         android:contentDescription="Avatar"

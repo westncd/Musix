@@ -4,4 +4,11 @@
         <item name="android:textColor">@color/white</item>
         <item name="android:popupBackground">@color/black</item>
     </style>
+    <style name="AlertDialogDarkTheme" parent="Theme.AppCompat.DayNight.Dialog.Alert">
+        <item name="android:background">@color/garden_gray</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textColorPrimary">@android:color/white</item>
+        <item name="android:textColorSecondary">@color/lighter_gray</item>
+        <item name="android:windowBackground">@android:color/black</item>
+    </style>
 </resources>

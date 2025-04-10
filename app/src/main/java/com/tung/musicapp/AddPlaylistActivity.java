@@ -31,6 +31,7 @@ public class AddPlaylistActivity extends AppCompatActivity {
         playlistNameInput = findViewById(R.id.playlist_name_input);
         createButton = findViewById(R.id.create_button);
         bottomNavigationView = findViewById(R.id.bottom_navigation);
+        bottomNavigationView.setSelectedItemId(R.id.nav_create);
         dbHelper = new DatabaseHelper(this);
 
         bottomNavigationView.setOnItemSelectedListener(item -> {
@@ -100,7 +101,9 @@ public class AddPlaylistActivity extends AppCompatActivity {
         Context wrapper = new ContextThemeWrapper(this, R.style.PopupMenuDark);
         PopupMenu popupMenu = new PopupMenu(wrapper, findViewById(R.id.bottom_navigation));
         popupMenu.getMenuInflater().inflate(R.menu.create_menu, popupMenu.getMenu());
-
+        if (!"Musician".equals(userRole)) {
+            popupMenu.getMenu().findItem(R.id.add_song).setVisible(false);
+        }
         popupMenu.setOnMenuItemClickListener(menuItem -> {
             int id = menuItem.getItemId();
             if (id == R.id.create_playlist) {

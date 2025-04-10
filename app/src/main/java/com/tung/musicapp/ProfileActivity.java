@@ -32,6 +32,7 @@ public class ProfileActivity extends AppCompatActivity {
         userEmailTextView = findViewById(R.id.user_email);
         userNameTextView = findViewById(R.id.user_name);
         bottomNavigationView = findViewById(R.id.bottom_navigation);
+        bottomNavigationView.setSelectedItemId(R.id.nav_profile);
 
         Intent intent = getIntent();
         userName = intent.getStringExtra("user_name");
@@ -84,7 +85,9 @@ public class ProfileActivity extends AppCompatActivity {
         Context wrapper = new ContextThemeWrapper(this, R.style.PopupMenuDark);
         PopupMenu popupMenu = new PopupMenu(wrapper, findViewById(R.id.bottom_navigation));
         popupMenu.getMenuInflater().inflate(R.menu.create_menu, popupMenu.getMenu());
-
+        if (!"Musician".equals(userRole)) {
+            popupMenu.getMenu().findItem(R.id.add_song).setVisible(false);
+        }
         popupMenu.setOnMenuItemClickListener(menuItem -> {
             int id = menuItem.getItemId();
             if (id == R.id.create_playlist) {

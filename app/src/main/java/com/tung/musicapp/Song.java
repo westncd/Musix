@@ -5,7 +5,8 @@ public class Song {
     private String artist;
     private String uri;
 
-    public Song(String name, String artist, String uri) {
+    public Song(int id, String name, String artist, String uri) {
+        this.id = id;
         this.name = name;
         this.artist = artist;
         this.uri = uri;
@@ -22,7 +23,6 @@ public class Song {
     public String getArtist() {
         return artist;
     }
-
 
     public String getUri() {
         return uri;

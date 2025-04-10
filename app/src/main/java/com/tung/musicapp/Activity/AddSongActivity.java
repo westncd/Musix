@@ -1,4 +1,4 @@
-package com.tung.musicapp;
+package com.tung.musicapp.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -13,6 +13,9 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.tung.musicapp.DatabaseHelper;
+import com.tung.musicapp.R;
+
 public class AddSongActivity extends AppCompatActivity {
     private Button addSongButton, pickMp3Button;
     private EditText songNameEditText;

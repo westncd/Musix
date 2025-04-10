@@ -6,11 +6,15 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
+
+import com.tung.musicapp.Models.Playlist;
+import com.tung.musicapp.Models.Song;
+
 import java.util.ArrayList;
 import java.util.List;
 public class DatabaseHelper extends SQLiteOpenHelper {
-    private static final String DATABASE_NAME = "spotify_clone.db";
-    private static final int DATABASE_VERSION = 7;
+    private static final String DATABASE_NAME = "musix.db";
+    private static final int DATABASE_VERSION = 8;
     public static final String TABLE_USERS = "users";
     public static final String COLUMN_USER_ID = "user_id";
     public static final String COLUMN_EMAIL = "email";

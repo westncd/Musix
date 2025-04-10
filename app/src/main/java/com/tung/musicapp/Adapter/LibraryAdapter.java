@@ -1,4 +1,4 @@
-package com.tung.musicapp;
+package com.tung.musicapp.Adapter;
 import android.content.Context;
 import android.content.Intent;
 import android.view.LayoutInflater;
@@ -6,6 +6,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
+
+import com.tung.musicapp.Activity.PlaylistActivity;
+import com.tung.musicapp.Models.Playlist;
+import com.tung.musicapp.R;
+
 import java.util.List;
 public class LibraryAdapter extends BaseAdapter {
     private Context context;

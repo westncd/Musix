@@ -13,22 +13,22 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.SpotifyClone">
         <activity
-            android:name=".PlaylistActivity"
+            android:name=".Activity.PlaylistActivity"
             android:exported="false" />
         <activity
-            android:name=".AddSongActivity"
+            android:name=".Activity.AddSongActivity"
             android:exported="false" />
         <activity
-            android:name=".ProfileActivity"
+            android:name=".Activity.ProfileActivity"
             android:exported="false" />
         <activity
-            android:name=".LibraryActivity"
+            android:name=".Activity.LibraryActivity"
             android:exported="false" />
         <activity
-            android:name=".AddPlaylistActivity"
+            android:name=".Activity.AddPlaylistActivity"
             android:exported="false" />
         <activity
-            android:name=".LoginActivity"
+            android:name=".Activity.LoginActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -37,7 +37,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".MainActivity"
+            android:name=".Activity.MainActivity"
             android:exported="false" />
     </application>
 

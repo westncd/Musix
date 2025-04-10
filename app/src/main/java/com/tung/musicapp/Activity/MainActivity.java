@@ -1,14 +1,12 @@
-package com.tung.musicapp;
+package com.tung.musicapp.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.AssetFileDescriptor;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.ContextThemeWrapper;
-import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.PopupMenu;
@@ -18,7 +16,11 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import java.io.IOException;
+import com.tung.musicapp.DatabaseHelper;
+import com.tung.musicapp.R;
+import com.tung.musicapp.Models.Song;
+import com.tung.musicapp.Adapter.SongAdapter;
+
 import java.util.List;
 public class MainActivity extends AppCompatActivity {
     private Toolbar toolbar;

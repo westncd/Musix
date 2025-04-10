@@ -1,4 +1,4 @@
-package com.tung.musicapp;
+package com.tung.musicapp.Adapter;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.view.ContextThemeWrapper;
@@ -9,6 +9,12 @@ import android.widget.BaseAdapter;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.tung.musicapp.DatabaseHelper;
+import com.tung.musicapp.Models.Playlist;
+import com.tung.musicapp.Models.Song;
+import com.tung.musicapp.R;
+
 import java.util.List;
 public class SongAdapter extends BaseAdapter {
     private Context context;

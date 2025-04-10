@@ -1,4 +1,4 @@
-package com.tung.musicapp;
+package com.tung.musicapp.Models;
 public class Song {
     private int id;
     private String name;

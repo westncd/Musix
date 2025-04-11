@@ -1,4 +1,5 @@
 package com.tung.musicapp;
+
 import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Context;
@@ -12,6 +13,7 @@ import com.tung.musicapp.Models.Song;
 
 import java.util.ArrayList;
 import java.util.List;
+
 public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "musix.db";
     private static final int DATABASE_VERSION = 8;
@@ -32,7 +34,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String COLUMN_SONG_ID = "song_id";
     public static final String COLUMN_SONG_NAME = "song_name";
     public static final String COLUMN_ARTIST = "artist";
-    public static final String COLUMN_URI = "uri"; // Thêm cột uri
+    public static final String COLUMN_URI = "uri";
     private static final String CREATE_TABLE_SONGS =
             "CREATE TABLE " + TABLE_SONGS + "(" +
                     COLUMN_SONG_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
@@ -62,24 +64,27 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     COLUMN_S_ID + " INTEGER," +
                     "FOREIGN KEY (" + COLUMN_PL_ID + ") REFERENCES " + TABLE_PLAYLISTS + "(" + COLUMN_PLAYLIST_ID + ")," +
                     "FOREIGN KEY (" + COLUMN_S_ID + ") REFERENCES " + TABLE_SONGS + "(" + COLUMN_SONG_ID + "))";
+
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
+
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(CREATE_TABLE_USERS);
         db.execSQL(CREATE_TABLE_SONGS);
         db.execSQL(CREATE_TABLE_PLAYLISTS);
         db.execSQL(CREATE_TABLE_PLAYLIST_SONGS);
-        insertUser(db, "musician1@email.com", "123456", "Nguyễn Văn Nhạc" ,  "Musician");
+        insertUser(db, "musician1@email.com", "123456", "Nguyễn Văn Nhạc", "Musician");
         insertUser(db, "listener1@email.com", "abc123", "Nguyễn Văn Thính", "Listener");
 
         insertSong(db, "Blinding Lights", "The Weeknd", null);
-        insertSong(db, "Shape of You", "Ed Sheeran",  null);
+        insertSong(db, "Shape of You", "Ed Sheeran", null);
         insertSong(db, "Someone Like You", "Adele", null);
-        insertSong(db, "Bohemian Rhapsody", "Queen",  null);
-        insertSong(db, "Dancing Queen", "ABBA",  null);
+        insertSong(db, "Bohemian Rhapsody", "Queen", null);
+        insertSong(db, "Dancing Queen", "ABBA", null);
     }
+
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_SONGS);
@@ -88,7 +93,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_PLAYLIST_SONGS);
         onCreate(db);
     }
-    private void insertUser(SQLiteDatabase db, String email, String password, String name,String role) {
+
+    private void insertUser(SQLiteDatabase db, String email, String password, String name, String role) {
         ContentValues values = new ContentValues();
         values.put(COLUMN_EMAIL, email);
         values.put(COLUMN_PASSWORD, password);
@@ -96,6 +102,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(COLUMN_ROLE, role);
         db.insert(TABLE_USERS, null, values);
     }
+
     private void insertSong(SQLiteDatabase db, String name, String artist, String uri) {
         ContentValues values = new ContentValues();
         values.put(COLUMN_SONG_NAME, name);
@@ -103,6 +110,20 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(COLUMN_URI, uri);
         db.insert(TABLE_SONGS, null, values);
     }
+
+    // Thêm phương thức addUser để hỗ trợ đăng ký
+    public boolean addUser(String name, String email, String password, String role) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_NAME, name);
+        values.put(COLUMN_EMAIL, email);
+        values.put(COLUMN_PASSWORD, password);
+        values.put(COLUMN_ROLE, role);
+        long result = db.insert(TABLE_USERS, null, values);
+        db.close();
+        return result != -1;
+    }
+
     @SuppressLint("Range")
     public User getUser(String email, String password) {
         SQLiteDatabase db = this.getReadableDatabase();
@@ -121,7 +142,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.close();
         return user;
     }
-    public boolean addSong(String name, String artist,  String uri) {
+
+    public boolean addSong(String name, String artist, String uri) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(COLUMN_SONG_NAME, name);
@@ -131,6 +153,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.close();
         return result != -1;
     }
+
     public List<Song> getAllSongs() {
         List<Song> songs = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
@@ -150,6 +173,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.close();
         return songs;
     }
+
     public boolean addPlaylist(String playlistName, String userEmail) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -159,6 +183,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.close();
         return result != -1;
     }
+
     public ArrayList<Playlist> getAllPlaylists(String userEmail) {
         ArrayList<Playlist> playlists = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
@@ -174,15 +199,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 String name = cursor.getString(cursor.getColumnIndexOrThrow("playlist_name"));
                 int songCount = cursor.getInt(cursor.getColumnIndexOrThrow("song_count"));
                 playlists.add(new Playlist(id, name, userEmail, songCount));
-
             } while (cursor.moveToNext());
         }
-
 
         cursor.close();
         db.close();
         return playlists;
     }
+
     public void addSongToPlaylist(int songId, int playlistId) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -200,6 +224,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         db.close();
     }
+
     public List<Song> getSongsInPlaylist(int playlistId) {
         List<Song> songs = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
@@ -223,17 +248,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.close();
         return songs;
     }
+
     public void removeSongFromPlaylist(int songId, int playlistId) {
         SQLiteDatabase db = this.getWritableDatabase();
         try {
-            // Xoá bài hát khỏi bảng trung gian
             int rowsAffected = db.delete(
                     TABLE_PLAYLIST_SONGS,
                     COLUMN_S_ID + " = ? AND " + COLUMN_PL_ID + " = ?",
                     new String[]{String.valueOf(songId), String.valueOf(playlistId)}
             );
 
-            // Nếu xoá thành công thì giảm song_count
             if (rowsAffected > 0) {
                 db.execSQL("UPDATE " + TABLE_PLAYLISTS +
                                 " SET " + COLUMN_SONG_COUNT + " = " + COLUMN_SONG_COUNT + " - 1 " +
@@ -246,6 +270,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             db.close();
         }
     }
+
     public void deletePlaylist(String playlistId) {
         SQLiteDatabase db = this.getWritableDatabase();
         try {
@@ -257,13 +282,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             db.close();
         }
     }
+
     public static class User {
         private String email;
         private String password;
         private String name;
         private String role;
 
-        public User(String email, String password, String name,String role) {
+        public User(String email, String password, String name, String role) {
             this.email = email;
             this.password = password;
             this.name = name;
@@ -273,9 +299,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         public String getEmail() {
             return email;
         }
-        public String getName(){
+
+        public String getName() {
             return name;
         }
+
         public String getRole() {
             return role;
         }

@@ -49,14 +49,7 @@ public class LibraryActivity extends AppCompatActivity {
         userName = intent.getStringExtra("user_name");
         userRole = intent.getStringExtra("user_role");
 
-        // ✅ Nhận tên bài hát từ Intent
-        String currentSong = intent.getStringExtra("current_song_name");
-        currentSongName = findViewById(R.id.current_song_name);
-        if (currentSong != null && !currentSong.isEmpty()) {
-            currentSongName.setText("Đang phát: " + currentSong);
-        } else {
-            currentSongName.setText("Chưa có bài hát nào đang phát");
-        }
+
 
         playPauseButton = findViewById(R.id.play_pause_button);
         prevButton = findViewById(R.id.prev_button);
@@ -92,7 +85,6 @@ public class LibraryActivity extends AppCompatActivity {
                 homeIntent.putExtra("user_email", userEmail);
                 homeIntent.putExtra("user_name", userName);
                 homeIntent.putExtra("user_role", userRole);
-                homeIntent.putExtra("current_song_name", currentSong); // Gửi lại nếu cần
                 startActivity(homeIntent);
                 return true;
             }
@@ -104,7 +96,6 @@ public class LibraryActivity extends AppCompatActivity {
                 profileIntent.putExtra("user_email", userEmail);
                 profileIntent.putExtra("user_name", userName);
                 profileIntent.putExtra("user_role", userRole);
-                profileIntent.putExtra("current_song_name", currentSong); // Gửi lại nếu cần
                 startActivity(profileIntent);
                 return true;
             }

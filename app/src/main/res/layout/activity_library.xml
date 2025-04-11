@@ -27,25 +27,6 @@
         app:layout_constraintBottom_toTopOf="@id/current_song_name"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
-
-    <!-- TextView tên bài hát -->
-
-    <!-- Media Control Buttons -->
-    <TextView
-        android:id="@+id/current_song_name"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:padding="4dp"
-        android:text="Chưa có bài hát nào được phát"
-        android:textAlignment="center"
-        android:textColor="@color/white"
-        android:textSize="14sp"
-        app:layout_constraintBottom_toTopOf="@id/media_controls"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/playlist_list" />
-
     <LinearLayout
         android:id="@+id/media_controls"
         android:layout_width="0dp"

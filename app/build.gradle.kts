@@ -38,6 +38,7 @@ dependencies {
     implementation(libs.constraintlayout)
     testImplementation(libs.junit)
     implementation("androidx.media:media:1.6.0")
+    implementation("com.google.android.material:material:1.11.0")
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
 }

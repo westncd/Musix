@@ -10,7 +10,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Register"
+        android:text="Đăng ký"
         android:textColor="@color/white"
         android:textSize="24sp"
         android:textStyle="bold"
@@ -65,6 +65,18 @@
         android:text="Register"
         android:backgroundTint="@color/green_spotify"
         android:textColor="@color/black"
-        android:padding="12dp"/>
+        android:padding="12dp"
+        android:layout_marginBottom="12dp"/>
+
+    <!-- Nút Đăng nhập -->
+    <TextView
+        android:id="@+id/login_redirect"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Đã có tài khoản? Đăng nhập"
+        android:textColor="@color/white"
+        android:textSize="14sp"
+        android:textStyle="italic"
+        android:layout_marginTop="8dp"/>
 
 </LinearLayout>

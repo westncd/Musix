@@ -2,11 +2,14 @@ package com.tung.musicapp.Activity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.ContextThemeWrapper;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.PopupMenu;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -28,6 +31,10 @@ public class LibraryActivity extends AppCompatActivity {
     private LibraryAdapter libraryAdapter;
     private ListView playlistListView;
     private ActivityResultLauncher<Intent> playlistLauncher;
+    private ImageButton playPauseButton, prevButton, nextButton;
+    private MediaPlayer mediaPlayer;
+    private TextView currentSongName;
+    private int currentSongIndex = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +48,19 @@ public class LibraryActivity extends AppCompatActivity {
         userEmail = intent.getStringExtra("user_email");
         userName = intent.getStringExtra("user_name");
         userRole = intent.getStringExtra("user_role");
+
+        // ✅ Nhận tên bài hát từ Intent
+        String currentSong = intent.getStringExtra("current_song_name");
+        currentSongName = findViewById(R.id.current_song_name);
+        if (currentSong != null && !currentSong.isEmpty()) {
+            currentSongName.setText("Đang phát: " + currentSong);
+        } else {
+            currentSongName.setText("Chưa có bài hát nào đang phát");
+        }
+
+        playPauseButton = findViewById(R.id.play_pause_button);
+        prevButton = findViewById(R.id.prev_button);
+        nextButton = findViewById(R.id.next_button);
 
         Log.d("LibraryActivity", "User Email: " + userEmail);
 
@@ -72,11 +92,11 @@ public class LibraryActivity extends AppCompatActivity {
                 homeIntent.putExtra("user_email", userEmail);
                 homeIntent.putExtra("user_name", userName);
                 homeIntent.putExtra("user_role", userRole);
+                homeIntent.putExtra("current_song_name", currentSong); // Gửi lại nếu cần
                 startActivity(homeIntent);
                 return true;
-            } else if (id == R.id.nav_search) {
-                return true;
-            } else if (id == R.id.nav_library) {
+            }
+            else if (id == R.id.nav_library) {
                 Toast.makeText(this, "Đã chọn Thư viện", Toast.LENGTH_SHORT).show();
                 return true;
             } else if (id == R.id.nav_profile) {
@@ -84,6 +104,7 @@ public class LibraryActivity extends AppCompatActivity {
                 profileIntent.putExtra("user_email", userEmail);
                 profileIntent.putExtra("user_name", userName);
                 profileIntent.putExtra("user_role", userRole);
+                profileIntent.putExtra("current_song_name", currentSong); // Gửi lại nếu cần
                 startActivity(profileIntent);
                 return true;
             }
@@ -127,6 +148,7 @@ public class LibraryActivity extends AppCompatActivity {
                 intent.putExtra("user_email", userEmail);
                 intent.putExtra("user_name", userName);
                 intent.putExtra("user_role", userRole);
+                intent.putExtra("current_song_name", currentSongName.getText().toString().replace("Đang phát: ", ""));
                 startActivity(intent);
                 return true;
             }

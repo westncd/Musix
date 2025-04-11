@@ -271,6 +271,20 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
+    public String getSongFilePath(int songId) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String filePath = null;
+
+        Cursor cursor = db.rawQuery("SELECT uri FROM songs WHERE song_id = ?", new String[]{String.valueOf(songId)});
+        if (cursor.moveToFirst()) {
+            filePath = cursor.getString(0);
+        }
+        cursor.close();
+        db.close();
+
+        return filePath;
+    }
+
     public void deletePlaylist(String playlistId) {
         SQLiteDatabase db = this.getWritableDatabase();
         try {

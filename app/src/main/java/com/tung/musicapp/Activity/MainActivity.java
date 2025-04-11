@@ -109,8 +109,6 @@ public class MainActivity extends AppCompatActivity {
             } else if (id == R.id.nav_home) {
                 Toast.makeText(this, "Đã chọn trang chủ", Toast.LENGTH_SHORT).show();
                 return true;
-            } else if (id == R.id.nav_search) {
-                return true;
             } else if (id == R.id.nav_library) {
                 startActivityWithExtras(LibraryActivity.class);
                 return true;

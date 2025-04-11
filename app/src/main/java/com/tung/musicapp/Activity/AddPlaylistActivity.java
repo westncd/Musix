@@ -42,9 +42,6 @@ public class AddPlaylistActivity extends AppCompatActivity {
                 homeIntent.putExtra("user_role", userRole);
                 startActivity(homeIntent);
                 return true;
-            } else if (id == R.id.nav_search) {
-                // xử lý tìm kiếm
-                return true;
             }
             else if (id == R.id.nav_library) {
                 Intent libIntent = new Intent(AddPlaylistActivity.this, LibraryActivity.class);
@@ -68,6 +65,7 @@ public class AddPlaylistActivity extends AppCompatActivity {
         Intent intent = getIntent();
         userEmail = intent.getStringExtra("user_email");
         userName = intent.getStringExtra("user_name");
+        userRole = intent.getStringExtra("user_role");
         createButton.setOnClickListener(v -> {
             String playlistName = playlistNameInput.getText().toString().trim();
             if (playlistName.isEmpty()) {
@@ -82,7 +80,7 @@ public class AddPlaylistActivity extends AppCompatActivity {
                 libIntent.putExtra("user_role", userRole);
                 startActivity(libIntent);
                 Toast.makeText(this, "Tạo playlist thành công!", Toast.LENGTH_SHORT).show();
-                finish(); // Đóng activity sau khi tạo thành công
+                finish();
             }
             else {
                 Toast.makeText(this, "Tạo playlist thất bại!", Toast.LENGTH_SHORT).show();

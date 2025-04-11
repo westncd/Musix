@@ -57,14 +57,16 @@ public class PlaylistActivity extends AppCompatActivity {
                 homeIntent.putExtra("user_role", userRole);
                 startActivity(homeIntent);
                 return true;
-            } else if (id == R.id.nav_search) {
-                // xử lý tìm kiếm (tuỳ bạn thêm sau)
+            }
+            else if (id == R.id.nav_library) {
+                Intent libIntent = new Intent( PlaylistActivity.this, LibraryActivity.class);
+                libIntent.putExtra("user_email", userEmail);
+                libIntent.putExtra("user_name", userName);
+                libIntent.putExtra("user_role", userRole);
+                startActivity(libIntent);
                 return true;
-            } else if (id == R.id.nav_library) {
-                // ✅ KHÔNG dùng startActivity nữa, chỉ cần finish()
-                finish();
-                return true;
-            } else if (id == R.id.nav_profile) {
+            }
+            else if (id == R.id.nav_profile) {
                 Intent profileIntent = new Intent(PlaylistActivity.this, ProfileActivity.class);
                 profileIntent.putExtra("user_email", userEmail);
                 profileIntent.putExtra("user_name", userName);
@@ -74,7 +76,6 @@ public class PlaylistActivity extends AppCompatActivity {
             }
             return false;
         });
-
         if (playlistName != null) {
             toolbar.setTitle(playlistName);
         }
@@ -110,16 +111,15 @@ public class PlaylistActivity extends AppCompatActivity {
                     dbHelper.deletePlaylist(playlistId);
                     Toast.makeText(this, "Đã xoá playlist!", Toast.LENGTH_SHORT).show();
 
+                    // Đặt kết quả để LibraryActivity biết là có xoá
                     Intent resultIntent = new Intent();
                     resultIntent.putExtra("playlist_deleted", true);
                     setResult(RESULT_OK, resultIntent);
-
                     finish();
                 })
                 .setNegativeButton("Huỷ", null)
                 .show();
     }
-
 
     private void loadSongs() {
         if (playlistId == null || playlistId.isEmpty()) {

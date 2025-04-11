@@ -54,11 +54,7 @@ public class ProfileActivity extends AppCompatActivity {
                 homeIntent.putExtra("user_role", userRole);
                 startActivity(homeIntent);
                 return true;
-            } else if (id == R.id.nav_search) {
-                // xử lý tìm kiếm
-                return true;
-            }
-            else if (id == R.id.nav_library) {
+            } else if (id == R.id.nav_library) {
                 Intent libIntent = new Intent(ProfileActivity.this, LibraryActivity.class);
                 libIntent.putExtra("user_email", userEmail);
                 libIntent.putExtra("user_name", userName);

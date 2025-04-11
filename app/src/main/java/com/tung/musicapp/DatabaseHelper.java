@@ -250,7 +250,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         try {
             db.delete("playlist_songs", "playlist_id = ?", new String[]{playlistId});
-            db.delete("playlists", "id = ?", new String[]{playlistId});
+            db.delete("playlists", "playlist_id = ?", new String[]{playlistId}); // <-- đã sửa tại đây
         } catch (Exception e) {
             e.printStackTrace();
         } finally {

@@ -29,7 +29,7 @@ public class PlaylistActivity extends AppCompatActivity {
     private PlaylistAdapter adapter;
     private DatabaseHelper dbHelper;
     private String playlistId;
-    private String userEmail, playlistName, userName, userRole;  // nếu cần dùng
+    private String userEmail, playlistName, userName, userRole;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

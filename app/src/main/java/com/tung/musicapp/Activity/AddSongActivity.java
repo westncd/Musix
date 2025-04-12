@@ -118,7 +118,6 @@ public class AddSongActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
         if (requestCode == PICK_MP3_REQUEST && resultCode == RESULT_OK && data != null) {
             Uri uri = data.getData();
             if (uri == null) {

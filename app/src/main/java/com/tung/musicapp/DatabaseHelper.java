@@ -111,7 +111,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.insert(TABLE_SONGS, null, values);
     }
 
-    // Thêm phương thức addUser để hỗ trợ đăng ký
     public boolean addUser(String name, String email, String password, String role) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -289,7 +288,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         try {
             db.delete("playlist_songs", "playlist_id = ?", new String[]{playlistId});
-            db.delete("playlists", "playlist_id = ?", new String[]{playlistId}); // <-- đã sửa tại đây
+            db.delete("playlists", "playlist_id = ?", new String[]{playlistId});
         } catch (Exception e) {
             e.printStackTrace();
         } finally {

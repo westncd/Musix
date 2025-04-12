@@ -31,7 +31,6 @@ public class LibraryActivity extends AppCompatActivity {
     private LibraryAdapter libraryAdapter;
     private ListView playlistListView;
     private ActivityResultLauncher<Intent> playlistLauncher;
-    private ImageButton playPauseButton, prevButton, nextButton;
     private MediaPlayer mediaPlayer;
     private TextView currentSongName;
     private int currentSongIndex = -1;
@@ -48,12 +47,6 @@ public class LibraryActivity extends AppCompatActivity {
         userEmail = intent.getStringExtra("user_email");
         userName = intent.getStringExtra("user_name");
         userRole = intent.getStringExtra("user_role");
-
-
-
-        playPauseButton = findViewById(R.id.play_pause_button);
-        prevButton = findViewById(R.id.prev_button);
-        nextButton = findViewById(R.id.next_button);
 
         Log.d("LibraryActivity", "User Email: " + userEmail);
 

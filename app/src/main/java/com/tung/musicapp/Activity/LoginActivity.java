@@ -49,7 +49,6 @@ public class LoginActivity extends AppCompatActivity {
             finish();
         });
 
-        // Xử lý sự kiện khi nhấn vào "Register here"
         registerLink.setOnClickListener(v -> {
             Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
             startActivity(intent);

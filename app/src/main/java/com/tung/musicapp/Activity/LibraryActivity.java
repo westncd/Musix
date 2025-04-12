@@ -119,7 +119,6 @@ public class LibraryActivity extends AppCompatActivity {
         if (!"Musician".equals(userRole)) {
             popupMenu.getMenu().findItem(R.id.add_song).setVisible(false);
         }
-
         popupMenu.setOnMenuItemClickListener(menuItem -> {
             int id = menuItem.getItemId();
             Intent intent = null;
@@ -132,7 +131,6 @@ public class LibraryActivity extends AppCompatActivity {
                 intent.putExtra("user_email", userEmail);
                 intent.putExtra("user_name", userName);
                 intent.putExtra("user_role", userRole);
-                intent.putExtra("current_song_name", currentSongName.getText().toString().replace("Đang phát: ", ""));
                 startActivity(intent);
                 return true;
             }
